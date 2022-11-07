@@ -9,7 +9,7 @@ const UserRefToken = require("../models/UserRefToken");
 async function generateToken(payload) {
   try {
     const options = {
-      expiresIn: `1h`,
+      expiresIn: `10s`,
     };
     const authToken = await jwt.sign(payload, JWT_SECRET, options);
     return authToken;
@@ -18,18 +18,15 @@ async function generateToken(payload) {
   }
 }
 
-async function verifyToken(req, res, next) {
+async function verifyToken(accessToken) {
   try {
-    const token = req.headers["authorization"];
-    if (!token) {
-      return res.status(401).json({ message: "Authorization header empty" });
-    }
-    const bearerToken = token.split(" ")[1];
-    const verifyToken = await jwt.verify(bearerToken, JWT_SECRET);
-    req.payload = verifyToken;
-    next();
+    const verifyToken = await jwt.verify(accessToken, JWT_SECRET);
+    return { verified: true, verifyToken, generateNew: false };
   } catch (error) {
-    return res.status(401).json({ message: error });
+    if (error.message === "jwt expired") {
+      return { verified: true, generateNew: true };
+    }
+    return { verified: false, generateNew: false };
   }
 }
 
@@ -51,17 +48,20 @@ async function generateRefreshToken(payload) {
   }
 }
 
-async function verifyRefreshToken(req, res, next) {
+async function verifyRefreshToken(refreshToken) {
   try {
-    let { refreshToken } = req.body;
     const verifyToken = await jwt.verify(refreshToken, JWT_REFRESH_SECRET);
     const savedToken = await UserRefToken.findOne({ id: verifyToken.id });
 
     if (refreshToken === savedToken.refToken) {
-      return verifyToken;
+      return { verified: true, verifyToken };
     }
+    return {
+      verified: false,
+      message: "token does not match with previous token",
+    };
   } catch (error) {
-    return error;
+    return { verified: false, message: "invalid token" };
   }
 }
 module.exports = {

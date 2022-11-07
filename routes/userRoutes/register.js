@@ -16,11 +16,11 @@ app.post(
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
+      return res.status(422).json({ message: errors.array() });
     }
     const user = await Registeration.findOne({ userid: req.body.userid });
     if (user) {
-      return res.status(409).json({ message: "Useralready exists" });
+      return res.status(409).json({ message: "User already exists" });
     }
     try {
       const salt = await bcryptjs.genSalt(10);

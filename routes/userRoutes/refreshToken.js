@@ -5,10 +5,10 @@ const { generateRefreshToken } = require("../../tokens/idToken");
 const app = express();
 
 app.post("/", async (req, res) => {
-  // let recievedRefreshToken = req.headers["refreshToken"];
   try {
-    const verifiedToken = await verifyRefreshToken(req, res);
-    if (verifiedToken instanceof Error) {
+    const { refreshToken } = req.body;
+    const verifiedToken = await verifyRefreshToken(refreshToken);
+    if (!verifiedToken.verified) {
       return res.status(401).json({ message: verifiedToken });
     }
 
