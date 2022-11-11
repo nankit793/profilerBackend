@@ -20,11 +20,9 @@ app.post(
       return res.status(400).json({ message: "Invalid username" });
     }
     try {
-      console.log("yeh");
       const salt = await bcryptjs.genSalt(10);
       const hashedPassword = await bcryptjs.hash(req.body.newPassword, salt);
       user.password = hashedPassword;
-      console.log("se");
       user.save();
       res.status(200).json({ message: "Your new password has been set" });
     } catch (error) {
