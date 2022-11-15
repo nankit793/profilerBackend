@@ -26,6 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 // routes to handle
 app.use("/", require("./routes/application"));
 app.use("/user", require("./routes/user"));
+app.use("/getbasic", require("./routes/userBasicInfo"));
 
 // unhandled routes
 app.use("*", (req, res) => {

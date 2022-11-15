@@ -9,7 +9,7 @@ const UserRefToken = require("../models/UserRefToken");
 async function generateToken(payload) {
   try {
     const options = {
-      expiresIn: `10s`,
+      expiresIn: `1h`,
     };
     const authToken = await jwt.sign(payload, JWT_SECRET, options);
     return authToken;

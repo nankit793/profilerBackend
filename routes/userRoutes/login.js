@@ -6,7 +6,7 @@ const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { generateToken, generateRefreshToken } = require("../../tokens/idToken");
 const UserRefToken = require("../../models/UserRefToken");
-
+const { saveOnDB } = require("./saveOnDB");
 app.post(
   "/",
   [
@@ -35,6 +35,7 @@ app.post(
       };
       const authToken = await generateToken(payload);
       const refreshToken = await generateRefreshToken(payload);
+      saveOnDB(req, payload);
       res.json({ accessToken: authToken, refreshToken: refreshToken });
     } catch (error) {
       res.status(400).send("Server Error");

@@ -5,7 +5,7 @@ const Registeration = require("../../models/Registration");
 const bcryptjs = require("bcryptjs");
 const UserRefToken = require("../../models/UserRefToken");
 const { generateToken, generateRefreshToken } = require("../../tokens/idToken");
-
+const { saveOnDB } = require("./saveOnDB");
 app.post(
   "/",
   [
@@ -34,9 +34,8 @@ app.post(
       };
       const authToken = await generateToken(payload);
       const refreshToken = await generateRefreshToken(payload);
-
+      saveOnDB(req, payload);
       saveUser.save();
-
       res.json({
         message: "User has been created",
         accessToken: authToken,
