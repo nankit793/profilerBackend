@@ -6,5 +6,7 @@ app.use("/login", require("./userRoutes/login"));
 app.use("/refresh-token", require("./userRoutes/refreshToken"));
 app.use("/forgotPassword", require("./userRoutes/forgotPassword"));
 app.use("/isUserRegistered", require("./userRoutes/isUserRegistered"));
+app.use("/jobProfiler", require("./jobProfiler/jobProfiler"));
+app.use("/profilerList", require("./profilerList"));
 
 module.exports = app;

@@ -23,6 +23,10 @@ const BasicUserInfo = new Schema({
   joiningDate: { type: Date, default: new Date() },
   gender: { type: String, enum: ["m", "f", "tg", ""], default: "" },
   nationality: { type: String, default: "" },
+  // jobProfile: {
+  //   generated: { type: Boolean, default: false },
+  //   views: { type: String, default: "0" },
+  // },
 });
 
 module.exports = mongoose.model("BasicUserInfo", BasicUserInfo);

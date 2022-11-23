@@ -1,16 +1,17 @@
 const { verifyRefreshToken, verifyToken, generateToken } = require("./idToken");
 const Registeration = require("../models/Registration");
 
-async function requestVerification(req) {
-  const { accessToken, refreshToken, userid } = req.body;
-  if (!accessToken || !refreshToken || !userid) {
+async function requestVerification(accesstoken, refreshtoken, userid) {
+  // const { accesstoken, refreshtoken, userid } = req.headers;
+  // console.log(accesstoken, refreshtoken, userid, "jhihi");
+  if (!accesstoken || !refreshtoken || !userid) {
     return { giveAccess: false, message: "Tokens not provided" };
   }
   let user = await Registeration.findOne({ userid: userid });
   if (!user) {
     return { giveAccess: false, message: "user could not be found" };
   }
-  const verifiedRefreshToken = await verifyRefreshToken(refreshToken);
+  const verifiedRefreshToken = await verifyRefreshToken(refreshtoken);
   if (!verifiedRefreshToken.verified) {
     return { giveAccess: false, message: verifiedRefreshToken.message };
   }
@@ -18,13 +19,11 @@ async function requestVerification(req) {
     return { giveAccess: false, message: "Tokens not belong to same user" };
   }
 
-  const verifiedAccessToken = await verifyToken(accessToken);
-  // console.log(verifiedRefreshToken, verifiedAccessToken);
+  const verifiedAccessToken = await verifyToken(accesstoken);
   if (verifiedAccessToken.verified && verifiedAccessToken.generateNew) {
     const payload = {
       id: verifiedRefreshToken.verifyToken.id,
     };
-
     const newAccessToken = await generateToken(payload);
     return { giveAccess: true, newAccessToken, user };
   }

@@ -4,7 +4,12 @@ const app = express();
 
 app.get("/", async (req, res) => {
   try {
-    const verifiedRequest = await requestVerification(req);
+    const { accesstoken, refreshtoken, userid } = req.headers;
+    const verifiedRequest = await requestVerification(
+      accesstoken,
+      refreshtoken,
+      userid
+    );
     if (!verifiedRequest.giveAccess) {
       return res.status(401).json({
         giveAccess: verifiedRequest.giveAccess,

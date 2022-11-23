@@ -16,7 +16,7 @@ app.post(
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ message: errors.array() });
+      return res.status(400).json({ error: errors });
     }
     let user = await Registeration.findOne({ userid: req.body.userid });
     if (!user) {
