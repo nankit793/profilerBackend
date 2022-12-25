@@ -2,20 +2,40 @@ const express = require("express");
 const app = express();
 const userBasicInfo = require("../models/BasicUserInfo");
 const { requestVerification } = require("../tokens/requestVerification");
+const deletions = (arr, user) => {
+  // delete keys
+  return user;
+};
 app.get("/", async (req, res) => {
-  const { userid } = req.headers;
+  const { userid, requirement, safeMode } = req.headers;
   if (!userid) {
-    return res.status(401).json({ message: "need userid or username" });
+    return res
+      .status(401)
+      .json({ message: "need userid or username", registered: false });
   }
   try {
     const user = await userBasicInfo.findOne({ userid: userid });
     if (!user) {
-      return res.status(401).json({ message: "user not found" });
+      return res
+        .status(401)
+        .json({ message: "user not found", registered: false });
     }
-    // delete id, _id from user and return
-    return res.status(200).json({ message: "user has been found", user });
+    if (requirement) {
+      const requiredData = user[requirement];
+      return res.status(200).json({ requiredData });
+    }
+    //
+    if (safeMode) {
+      const newData = deletions(["_id", "id", "jobProfile"], user);
+      return res.status(200).json({ message: "safe mode on", newData });
+    }
+    const newData = deletions(["_id", "id"], user);
+    return res
+      .status(200)
+      .json({ message: "user has been found", registered: true, newData });
   } catch (error) {
-    return res.status(401).json({ message: error });
+    console.log(error);
+    return res.status(401).json({ message: error.message });
   }
 });
 
@@ -45,6 +65,7 @@ app.patch("/", async (req, res) => {
     delete data["userid"];
     delete data["id"];
     delete data["username"];
+    delete data["jobProfile"];
     const saveUser = await userBasicInfo.findOneAndUpdate(
       { id: user.id },
       data

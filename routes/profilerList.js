@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const postJobProfiler = require("../models/JobProfiler");
+const userData = require("../models/BasicUserInfo");
 const Registration = require("../models/Registration");
 
 app.get("/", async (req, res) => {
@@ -15,8 +15,8 @@ app.get("/", async (req, res) => {
       .json({ message: "user not found", registered: false });
   }
   let jobProfile = true;
-  const userOnPost = await postJobProfiler.findOne({ userid: userid });
-  if (!userOnPost) {
+  const userOnPost = await userData.findOne({ userid: userid });
+  if (!userOnPost.jobProfile.generated) {
     jobProfile = false;
   }
   res.status(200).json({ message: "success", jobProfile });
