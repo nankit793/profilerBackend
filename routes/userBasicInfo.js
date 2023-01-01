@@ -21,8 +21,11 @@ app.get("/", async (req, res) => {
         .json({ message: "user not found", registered: false });
     }
     if (requirement) {
-      const requiredData = user[requirement];
-      return res.status(200).json({ requiredData });
+      // requirement.forEach(element => {
+      //   const requiredData = user[element];
+      //   newData.element = requiredData
+      // });
+      return res.status(200).json({ newData: { userid: user["userid"], name: user["name"], newData: user[requirement] } });
     }
     //
     if (safeMode) {

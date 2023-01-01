@@ -10,7 +10,7 @@ const BasicUserInfo = new Schema({
     image: { data: Buffer, contentType: String },
     name: { type: String, default: "profile image" },
   },
-  username: { type: String, default: "" },
+  username: { type: String, default: "", unique: true },
   slogan: { type: String, default: "" },
   bio: { type: String, default: "" },
   facebook: { type: String, default: "" },
@@ -29,16 +29,51 @@ const BasicUserInfo = new Schema({
   nationality: { type: String, default: "" },
   jobProfile: {
     generated: { type: Boolean, default: false },
-    location: { type: String, default: "" },
     designation: { type: String, default: "" },
-    education: { type: Array, default: [] },
-    experience: { type: Array, default: [] },
-    skills: { type: Array, default: [] },
+    education: [
+      {
+        title: { type: String, default: "" },
+        attending: { type: Boolean, default: false },
+        clearedOn: { type: Date, default: "" },
+        institution: { type: String, default: "" },
+      },
+    ],
+    experience: [
+      {
+        title: { type: String, default: "" },
+        working: { type: Date, default: "" },
+        from: { type: Date, default: "" },
+        to: { type: Date, default: "" },
+        company: { type: String, default: "" },
+      },
+    ],
+    skills: [{ title: { type: String, default: "" } }],
     mail: { type: String, default: "" },
-    hobbies: { type: Array, default: [] },
-    certificates: { type: Array, default: [] },
-    achievements: { type: Array, default: [] },
-    projects: { type: Array, default: [] },
+    hobbies: [
+      {
+        title: { type: String, default: "" },
+      },
+    ],
+    certificates: [
+      {
+        title: { type: String, default: "" },
+        image: { type: String, default: "" },
+      },
+    ],
+    achievements: [
+      {
+        title: { type: String, default: "" },
+        image: { type: String, default: "" },
+      },
+    ],
+    projects: [
+      {
+        title: { type: String, default: "" },
+        url: { type: String, default: "" },
+        image: { type: String, default: "" },
+      },
+    ],
+    about: { type: String, default: "" },
   },
 });
 
