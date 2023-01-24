@@ -29,7 +29,6 @@ const BasicUserInfo = new Schema({
   nationality: { type: String, default: "" },
   jobProfile: {
     generated: { type: Boolean, default: false },
-    designation: { type: String, default: "" },
     education: [
       {
         title: { type: String, default: "" },
@@ -38,22 +37,37 @@ const BasicUserInfo = new Schema({
         institution: { type: String, default: "" },
       },
     ],
-    experience: [
-      {
-        title: { type: String, default: "" },
-        working: { type: Date, default: "" },
-        from: { type: Date, default: "" },
-        to: { type: Date, default: "" },
-        company: { type: String, default: "" },
-      },
-    ],
-    skills: [{ title: { type: String, default: "" } }],
+    experience: {
+      type: [
+        {
+          designation: { type: String, default: "" },
+          working: { type: Date, default: "" },
+          from: { type: Date, default: "" },
+          to: { type: Date, default: "" },
+          company: { type: String, default: "" },
+          description: { type: String, default: "" },
+        },
+      ],
+      validate: [arrayLimit, " exceeds the limit of 10"],
+    },
+    // experience: [
+    //   {
+    //     title: { type: String, default: "" },
+    //     working: { type: Date, default: "" },
+    //     from: { type: Date, default: "" },
+    //     to: { type: Date, default: "" },
+    //     company: { type: String, default: "" },
+    //   },
+    // ],
+    skills: {
+      type: [{ type: String }],
+      validate: [arrayLimit, " exceeds the limit of 10"],
+    },
     mail: { type: String, default: "" },
-    hobbies: [
-      {
-        title: { type: String, default: "" },
-      },
-    ],
+    hobbies: {
+      type: [{ type: String }],
+      validate: [arrayLimit, " exceeds the limit of 10"],
+    },
     certificates: [
       {
         title: { type: String, default: "" },
@@ -76,5 +90,7 @@ const BasicUserInfo = new Schema({
     about: { type: String, default: "" },
   },
 });
-
+function arrayLimit(val) {
+  return val.length <= 10;
+}
 module.exports = mongoose.model("BasicUserInfo", BasicUserInfo);

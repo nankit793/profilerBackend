@@ -4,24 +4,23 @@ const userBasicInfo = require("../models/BasicUserInfo");
 const { requestVerification } = require("../tokens/requestVerification");
 
 app.patch("/", async (req, res) => {
-  const { accesstoken, refreshtoken, userid } = req.body.headers;
-  const verifiedRequest = await requestVerification(
-    accesstoken,
-    refreshtoken,
-    userid
-  );
-  if (!verifiedRequest.giveAccess) {
-    return res.status(401).json({
-      giveAccess: verifiedRequest.giveAccess,
-      message: verifiedRequest.message,
-    });
-  }
-
   try {
+    const { accesstoken, refreshtoken, userid } = req.body.headers;
+    const verifiedRequest = await requestVerification(
+      accesstoken,
+      refreshtoken,
+      userid
+    );
+    if (!verifiedRequest.giveAccess) {
+      return res.status(401).json({
+        giveAccess: verifiedRequest.giveAccess,
+        message: verifiedRequest.message,
+      });
+    }
+
     const { newAccessToken } = verifiedRequest || "";
     const { user } = verifiedRequest;
-    const data = req.body.headers.data;
-    const { jobProfile } = data;
+    const { jobProfile } = req.body;
     const saveUser = await userBasicInfo.findOne({ id: user.id });
     if (saveUser.jobProfile.generated) {
       jobProfile.generated = true;
