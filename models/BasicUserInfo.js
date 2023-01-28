@@ -29,19 +29,21 @@ const BasicUserInfo = new Schema({
   nationality: { type: String, default: "" },
   jobProfile: {
     generated: { type: Boolean, default: false },
-    education: [
-      {
-        title: { type: String, default: "" },
-        attending: { type: Boolean, default: false },
-        clearedOn: { type: Date, default: "" },
-        institution: { type: String, default: "" },
-      },
-    ],
+    education: {
+      type: [
+        {
+          institution: { type: String, default: "" },
+          education: { type: String, default: "" },
+          attending: { type: Boolean, default: false },
+          clearedOn: { type: Date, default: "" },
+        },
+      ],
+    },
     experience: {
       type: [
         {
           designation: { type: String, default: "" },
-          working: { type: Date, default: "" },
+          working: { type: Boolean, default: false },
           from: { type: Date, default: "" },
           to: { type: Date, default: "" },
           company: { type: String, default: "" },
