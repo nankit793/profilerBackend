@@ -52,15 +52,6 @@ const BasicUserInfo = new Schema({
       ],
       validate: [arrayLimit, " exceeds the limit of 10"],
     },
-    // experience: [
-    //   {
-    //     title: { type: String, default: "" },
-    //     working: { type: Date, default: "" },
-    //     from: { type: Date, default: "" },
-    //     to: { type: Date, default: "" },
-    //     company: { type: String, default: "" },
-    //   },
-    // ],
     skills: {
       type: [{ type: String }],
       validate: [arrayLimit, " exceeds the limit of 10"],
@@ -70,25 +61,31 @@ const BasicUserInfo = new Schema({
       type: [{ type: String }],
       validate: [arrayLimit, " exceeds the limit of 10"],
     },
-    certificates: [
-      {
-        title: { type: String, default: "" },
-        image: { type: String, default: "" },
-      },
-    ],
+    certificates: {
+      type: [
+        {
+          title: { type: String, default: "" },
+          organization: { type: String, default: "" },
+          image: { type: String, default: "" },
+        },
+      ],
+    },
     achievements: [
       {
         title: { type: String, default: "" },
         image: { type: String, default: "" },
       },
     ],
-    projects: [
-      {
-        title: { type: String, default: "" },
-        url: { type: String, default: "" },
-        image: { type: String, default: "" },
-      },
-    ],
+    projects: {
+      type: [
+        {
+          title: { type: String, default: "" },
+          url: { type: String, default: "" },
+          desc: { type: String, default: "" },
+          tech: { type: String, default: "" },
+        },
+      ],
+    },
     about: { type: String, default: "" },
   },
 });
