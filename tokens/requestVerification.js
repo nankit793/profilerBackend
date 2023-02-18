@@ -11,6 +11,9 @@ async function requestVerification(accesstoken, refreshtoken, userid) {
   if (!user) {
     return { giveAccess: false, message: "user could not be found" };
   }
+  if (user && !user.verified) {
+    return { giveAccess: false, message: "user is not verified" };
+  }
   const verifiedRefreshToken = await verifyRefreshToken(refreshtoken);
   if (!verifiedRefreshToken.verified) {
     return { giveAccess: false, message: verifiedRefreshToken.message };

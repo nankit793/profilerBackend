@@ -2,10 +2,16 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const BasicUserInfo = new Schema({
-  id: { type: String, required: true },
-  userid: { type: String, required: true, lowercase: true, unique: true },
-  name: { type: String, default: "" },
-  phone: { type: String, default: "" },
+  id: { type: String, required: true, unique: true, immutable: true },
+  userid: {
+    type: String,
+    required: true,
+    lowercase: true,
+    unique: true,
+    immutable: true,
+  },
+  name: { type: String, default: "", maxLength: 30 },
+  phone: { type: String, default: "", maxLength: 30 },
   profileImage: {
     image: { data: Buffer, contentType: String },
   },

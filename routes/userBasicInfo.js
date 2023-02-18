@@ -20,12 +20,21 @@ app.get("/", async (req, res) => {
         .status(401)
         .json({ message: "user not found", registered: false });
     }
+    // if (!user.verified) {
+    //   return res.status(401).json({ message: "user not verified" });
+    // }
     if (requirement) {
       // requirement.forEach(element => {
       //   const requiredData = user[element];
       //   newData.element = requiredData
       // });
-      return res.status(200).json({ newData: { userid: user["userid"], name: user["name"], newData: user[requirement] } });
+      return res.status(200).json({
+        newData: {
+          userid: user["userid"],
+          name: user["name"],
+          newData: user[requirement],
+        },
+      });
     }
     //
     if (safeMode) {

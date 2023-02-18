@@ -17,6 +17,7 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(express.json());
 // routes to handle
+
 app.use("/", require("./routes/application"));
 app.use("/user", require("./routes/user"));
 app.use("/getbasic", require("./routes/userBasicInfo"));
@@ -24,7 +25,7 @@ app.use("/updateJobProfile", require("./routes/updateJobProfile"));
 app.use("/jobResume", require("./routes/jobResume"));
 app.use("/searchUser", require("./routes/searchUser"));
 app.use("/profilePhoto", require("./routes/profilePhoto"));
-
+app.use("/blogPost", require("./routes/services/postBlog"));
 // unhandled routes
 app.use("*", (req, res) => {
   res.status(404).json({ message: "page not found" });
