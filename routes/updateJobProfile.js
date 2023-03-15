@@ -10,7 +10,7 @@ const { requestVerification } = require("../tokens/requestVerification");
 
 app.patch("/", async (req, res) => {
   try {
-    const { accesstoken, refreshtoken, userid } = req.body.headers;
+    const { accesstoken, refreshtoken, userid } = req.headers;
     const verifiedRequest = await requestVerification(
       accesstoken,
       refreshtoken,
@@ -24,7 +24,7 @@ app.patch("/", async (req, res) => {
     }
     const { newAccessToken } = verifiedRequest || "";
     const { user } = verifiedRequest;
-    const jobProfile = req.body.jobProfile;
+    const jobProfile = req.body.data;
     const saveUser = await userBasicInfo.findOne({ id: user.id });
     if (saveUser.jobProfile.generated) {
       jobProfile.generated = true;

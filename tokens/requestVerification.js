@@ -40,4 +40,16 @@ async function requestVerification(accesstoken, refreshtoken, userid) {
   }
   return { giveAccess: false, message: "token invalid" };
 }
-module.exports = { requestVerification };
+
+async function userFromToken(refreshtoken) {
+  const verifiedRefreshToken = await verifyRefreshToken(refreshtoken);
+  if (!verifiedRefreshToken.verified) {
+    return { showDetails: false, message: verifiedRefreshToken.message };
+  }
+  const user = Registeration.findById(verifiedRefreshToken.verifyToken.id);
+  if (!user) {
+    return { showDetails: false, message: "user was not found" };
+  }
+  return { showDetails: true, user };
+}
+module.exports = { requestVerification, userFromToken };

@@ -1,5 +1,14 @@
 const mongoose = require("mongoose");
+const BlogsData = require("./BlogsData");
 const { Schema } = mongoose;
+
+// const BookMarkSchema = new Schema({
+//   bookmark: {
+//     type: Schema.Types.ObjectId,
+//     ref: "BlogsData",
+//     required: true,
+//   },
+// });
 
 const BasicUserInfo = new Schema({
   id: { type: String, required: true, unique: true, immutable: true },
@@ -11,10 +20,16 @@ const BasicUserInfo = new Schema({
     immutable: true,
   },
   name: { type: String, default: "", maxLength: 30 },
+  bookMarks: [
+    {
+      // bookmark: {
+      type: Schema.Types.ObjectId,
+      ref: "BlogsData",
+      required: true,
+      // },
+    },
+  ],
   phone: { type: String, default: "", maxLength: 30 },
-  profileImage: {
-    image: { data: Buffer, contentType: String },
-  },
   username: { type: String, default: "", unique: true },
   facebook: { type: String, default: "" },
   instagram: { type: String, default: "" },

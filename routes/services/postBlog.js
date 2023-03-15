@@ -1,14 +1,22 @@
-const express = require("express");
 const BasicUserInfo = require("../../models/BasicUserInfo");
 const BlogsData = require("../../models/BlogsData");
+const BlogsImages = require("../../models/BlogsImages");
+const LikesSchema = require("../../models/LikesSchema");
+const BlogActivities = require("../../models/BlogActivities");
+const express = require("express");
 const app = express();
+const multer = require("multer");
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+const {
+  requestVerification,
+  userFromToken,
+} = require("../../tokens/requestVerification");
 
-// const Registration = require("../../models/Registration");
-const { requestVerification } = require("../../tokens/requestVerification");
-app.post("/", async (req, res) => {
+app.post("/", upload.single("image"), async (req, res) => {
   try {
     //  id is basicUserInfo's id of that user
-    const { accesstoken, refreshtoken, userid, id } = req.headers;
+    const { accesstoken, refreshtoken, userid } = req.headers;
     const verifiedRequest = await requestVerification(
       accesstoken,
       refreshtoken,
@@ -25,12 +33,25 @@ app.post("/", async (req, res) => {
 
     let BasicInfo = await BasicUserInfo.find({ id: user.id });
     const basicUserId = BasicInfo[0]._id;
-    // for (let index = 0; index < 100; index++) {
-      console.log("first");
-      const blogUpload = await BlogsData({ author: basicUserId });
-      blogUpload.heading = req.body.heading;
-      await blogUpload.save();
-    // }
+
+    const blogStructure = JSON.parse(req.body.data);
+    const blogUpload = await BlogsData({
+      author: basicUserId,
+      ...blogStructure,
+    });
+    const blogAtActivity = await BlogActivities({ blog: blogUpload._id });
+    if (req.file.buffer) {
+      const imageUpload = await BlogsImages({
+        blog: blogUpload._id,
+        image: req.file.buffer,
+        tag: blogStructure.tag,
+      });
+      blogUpload.imageURL = imageUpload._id;
+      await imageUpload.save();
+    }
+    blogUpload.activities = blogAtActivity._id;
+    await blogAtActivity.save();
+    await blogUpload.save();
     res.status(200).json({ message: "blog has been uploaded", newAccessToken });
   } catch (error) {
     res.status(401).json({ message: error.message });
@@ -41,11 +62,16 @@ app.get("/author/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const blogUpload = await BlogsData.find({ author: id })
-      .populate("author")
-      .select("userid");
-    // console.log(blogUpload[(0, 10)]);
-    const length = blogUpload.length;
-    res.status(200).json({ message: "blog has been uploaded", length });
+      .select("heading paragraphs imageURL tag _id  ")
+      .populate("activities", [
+        "numLikes",
+        "numComments",
+        "views",
+        "blogUpload",
+      ]);
+    res
+      .status(200)
+      .json({ message: "Author related blogs have been fetched", blogUpload });
   } catch (error) {
     res.status(401).json({ message: error.message });
   }
@@ -54,14 +80,65 @@ app.get("/author/:id", async (req, res) => {
 app.get("/get/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const blog = await BlogsData.findById(id);
+    const { userid } = req.headers;
+    const user = await BasicUserInfo.findOne({ userid });
+    if (!id) {
+      return res.status(401).json({ message: "id is required" });
+    }
+    let blog = await BlogsData.findById(id)
+      .select("-comments")
+      .populate("activities", [
+        "numLikes",
+        "numComments",
+        "views",
+        "blogUpload",
+      ])
+      .populate("author", [
+        "name",
+        "userid",
+        "username",
+        "facebook",
+        "instagram",
+        "linkdn",
+        "github",
+        "youtube",
+      ]);
+
+    let liked = false;
+    let LikingOfBlog;
+    LikingOfBlog = await LikesSchema.findOne({ blog: blog._id });
+    if (userid && user) {
+      if (
+        LikingOfBlog &&
+        LikingOfBlog.likes &&
+        LikingOfBlog.likes.includes(user._id)
+      ) {
+        liked = true;
+      }
+    }
     if (blog) {
-      blog.views++;
-      blog.save();
-      res.status(200).json({ message: "success", blog });
+      const blogAtActivity = await BlogActivities.findById(blog.activities);
+      blogAtActivity.views++;
+      await blogAtActivity.save();
+      res.status(200).json({ message: "success", blog, liked });
       return;
     }
     return res.status(401).json({ message: "blog was not found" });
+  } catch (error) {
+    res.status(401).json({ message: error.message });
+  }
+});
+
+app.get("/image/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(401).json({ message: "id is required" });
+    }
+    const blogImage = await BlogsImages.findById(id);
+    // const base64 = Buffer.from(blogImage.image).toString("base64");
+    // res.contentType("jpeg");
+    res.status(200).send(blogImage.image);
   } catch (error) {
     res.status(401).json({ message: error.message });
   }

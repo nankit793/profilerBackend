@@ -1,13 +1,12 @@
 const express = require("express");
 const app = express();
 const userBasicInfo = require("../models/BasicUserInfo");
+const BlogsData = require("../models/BlogsData");
+const FollowersData = require("../models/FollowersData");
 const { requestVerification } = require("../tokens/requestVerification");
-const deletions = (arr, user) => {
-  // delete keys
-  return user;
-};
+
 app.get("/", async (req, res) => {
-  const { userid, requirement, safeMode } = req.headers;
+  const { userid, requirement } = req.headers;
   if (!userid) {
     return res
       .status(401)
@@ -24,10 +23,6 @@ app.get("/", async (req, res) => {
     //   return res.status(401).json({ message: "user not verified" });
     // }
     if (requirement) {
-      // requirement.forEach(element => {
-      //   const requiredData = user[element];
-      //   newData.element = requiredData
-      // });
       return res.status(200).json({
         newData: {
           userid: user["userid"],
@@ -36,15 +31,17 @@ app.get("/", async (req, res) => {
         },
       });
     }
-    //
-    if (safeMode) {
-      const newData = deletions(["_id", "id", "jobProfile"], user);
-      return res.status(200).json({ message: "safe mode on", newData });
-    }
-    const newData = deletions(["_id", "id"], user);
-    return res
-      .status(200)
-      .json({ message: "user has been found", registered: true, newData });
+    const followData = await FollowersData.findOne({ user: user._id });
+    const blogUpload = await BlogsData.find({ author: user._id });
+
+    return res.status(200).json({
+      message: "user has been found",
+      registered: true,
+      newData: user,
+      followingCount: (followData && followData.followingCount) || 0,
+      followersCount: (followData && followData.followersCount) || 0,
+      blogsCount: (blogUpload && blogUpload.length) || 0,
+    });
   } catch (error) {
     console.log(error);
     return res.status(401).json({ message: error.message });

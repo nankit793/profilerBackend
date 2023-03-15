@@ -20,9 +20,9 @@ app.get("/", async (req, res) => {
         return res.status(401).json({ message: "user not verified" });
       }
       const media = await MediaData.findOne({ id: user.id });
-      const base64 = Buffer.from(media.image).toString("base64");
+      // const base64 = Buffer.from(media.image).toString("base64");
       res.contentType("jpeg");
-      res.status(200).send(base64);
+      res.status(200).send(media.image);
       return;
     }
     res.status(401).json({ message: "userid not defined" });

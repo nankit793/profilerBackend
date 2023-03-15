@@ -1,31 +1,46 @@
 const mongoose = require("mongoose");
-// const Registration = require("./Registration");
 const { Schema } = mongoose;
 const BasicUserInfo = require("./BasicUserInfo");
-// Registration
+const BlogActivities = require("./BlogActivities");
+
+const CommentSchema = new Schema({
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: "BasicUserInfo",
+    required: true,
+  },
+  text: { type: String, maxLength: 500, minlength: 5, required: true },
+  createdAt: { type: Date, default: Date.now },
+  pinned: { type: Boolean, default: false },
+  edited: { type: Boolean, default: false },
+});
 
 const BlogsData = new Schema({
-  // id: { type: String, required: true, immutable: true },
   heading: {
     type: String,
     default: "",
     required: true,
     maxLength: 60,
-    immutable: true,
   },
-  views: { type: Number, default: 0 },
   redirectURL: { type: String, default: "", maxLength: 2048 },
-  uploadDate: { type: Date, default: new Date() },
+  selectedRedirection: {
+    type: String,
+    enum: ["website", "youtube"],
+    default: "website",
+  },
   imageURL: { type: String, default: "", maxLength: 2048 },
   author: {
     type: Schema.Types.ObjectId,
-    ref: BasicUserInfo,
+    ref: "BasicUserInfo",
     required: true,
-    select: "userid name",
   },
-  // authorEmail: { type: String, default: "", maxLength: 320, immutable: true},
-  // authorName: { type: String, default: "", maxLength: 50 },
-  tags: {
+  comments: [CommentSchema],
+  activities: {
+    type: Schema.Types.ObjectId,
+    ref: BlogActivities,
+    required: true,
+  },
+  tag: {
     type: String,
     enum: [
       "food",
@@ -52,12 +67,17 @@ const BlogsData = new Schema({
       "news",
       "general",
       "technology",
-      "market",
+      "sharemarket",
     ],
     default: "general",
   },
   paragraphs: {
-    type: [{ type: String, maxLength: 1000 }],
+    type: [
+      {
+        paragraph: { type: String, maxLength: 1000 },
+        subHead: { type: String, maxLength: 60 },
+      },
+    ],
     validate: [arrayLimit, " exceeds the limit of 4"],
   },
 });
@@ -65,5 +85,7 @@ const BlogsData = new Schema({
 function arrayLimit(val) {
   return val.length <= 4;
 }
+
+BlogsData.index({ author: -1 });
 
 module.exports = mongoose.model("BlogsData", BlogsData);
