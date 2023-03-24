@@ -21,6 +21,7 @@ app.get("/", async (req, res) => {
   const { newAccessToken } = verifiedRequest || "";
   const { user } = verifiedRequest;
   const currentUser = await BasicUserInfo.findOne({ id: user.id });
+  
   const followingOfCurrentUser = await FollowersData.findOne({
     user: currentUser._id,
   }).select("following");

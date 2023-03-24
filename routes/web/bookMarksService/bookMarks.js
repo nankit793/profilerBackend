@@ -1,6 +1,7 @@
 const BasicUserInfo = require("../../../models/BasicUserInfo");
 const express = require("express");
 const BlogsData = require("../../../models/BlogsData");
+const BlogActivities = require("../../../models/BlogActivities");
 const {
   requestVerification,
   userFromToken,
@@ -67,16 +68,17 @@ app.get("/", async (req, res) => {
     const { user } = verifiedRequest;
 
     let BasicInfo = await BasicUserInfo.findOne({ id: user.id })
-      .select("bookMarks")
-      .populate("bookMarks", [
-        "heading",
-        "paragraphs",
-        "tag",
-        "activities",
-        "author",
-      ]);
+      .select("+bookMarks ")
+      .populate({
+        path: "bookMarks",
+        populate: {
+          path: "author",
+          model: "BasicUserInfo",
+          select: ["userid", "username", "name"],
+        },
+        // populate: { path: "activities" },
+      });
     // .populate("bookMarks.author", ["userid"]);
-    console.log(BasicInfo);
     res.status(200).json({
       message: "blogs fetched",
       state: true,

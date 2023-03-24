@@ -5,17 +5,13 @@ const app = express();
 
 app.get("/", async (req, res) => {
   try {
-    const { userid } = req.headers;
-    if (!userid) {
-      res.status(401).json({ message: "user id not provided" });
+    const { pid } = req.query;
+    if (!pid) {
+      res.status(401).json({ message: "portfolio not provided" });
       return;
     }
-    const user = await Registration.findOne({ userid: userid });
-    if (!user) {
-      res.status(401).json({ message: "user do not exist" });
-      return;
-    }
-    const media = await MediaData.findOne({ id: user._id });
+
+    const media = await MediaData.findOne({ pid: pid });
     if (!media) {
       res.status(401).json({ message: "media not available" });
       return;

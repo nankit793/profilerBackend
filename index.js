@@ -1,6 +1,8 @@
 require("./db");
 require("./tokens/redis");
+const callerFunciton = require("./trendingBlogs");
 var bodyParser = require("body-parser");
+callerFunciton();
 const cors = require("cors");
 const express = require("express");
 const port = process.env.PORT || 5000;
@@ -24,15 +26,16 @@ app.use(express.json());
 app.use("/", require("./routes/application"));
 app.use("/user", require("./routes/user"));
 app.use("/getbasic", require("./routes/userBasicInfo"));
-app.use("/updateJobProfile", require("./routes/updateJobProfile"));
 app.use("/jobResume", require("./routes/jobResume"));
 app.use("/searchUser", require("./routes/searchUser"));
 app.use("/profilePhoto", require("./routes/profilePhoto"));
-app.use("/blogPost", require("./routes/services/postBlog"));
-app.use("/deleteBlog", require("./routes/services/deleteBlog"));
 app.use("/follow", require("./routes/userRoutes/follow"));
 app.use("/unfollow", require("./routes/userRoutes/unfollow"));
 app.use("/followingList", require("./routes/followingList"));
+
+// blog
+app.use("/blogPost", require("./routes/services/postBlog"));
+app.use("/deleteBlog", require("./routes/services/deleteBlog"));
 app.use("/like", require("./routes/web/like"));
 app.use("/unlike", require("./routes/web/unlike"));
 app.use("/comment", require("./routes/web/comment"));
@@ -43,6 +46,16 @@ app.use(
   "/removeBookmark",
   require("./routes/web/bookMarksService/removeBookmark")
 );
+app.use("/editBlog", require("./routes/services/editBlog"));
+// portfolio
+app.use("/portfolio/update", require("./routes/services/updateJobProfile"));
+app.use("/portfolio/add", require("./routes/services/generatePortfolio"));
+app.use("/portfolio/get", require("./routes/services/getPortfolio"));
+app.use("/portfolio/like", require("./routes/web/portfolio/like"));
+app.use("/portfolio/unlike", require("./routes/web/portfolio/unlike"));
+app.use("/portfolio/review", require("./routes/web/portfolio/reviews"));
+app.use("/portfolio/review", require("./routes/web/portfolio/reviews"));
+app.use("/portfolio/review/edit", require("./routes/web/portfolio/editReview"));
 
 // unhandled routes
 app.use("*", (req, res) => {

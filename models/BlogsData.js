@@ -33,6 +33,7 @@ const BlogsData = new Schema({
     type: Schema.Types.ObjectId,
     ref: "BasicUserInfo",
     required: true,
+    immutable: true,
   },
   comments: [CommentSchema],
   activities: {

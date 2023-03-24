@@ -39,8 +39,18 @@ app.post("/", upload.single("image"), async (req, res) => {
       author: basicUserId,
       ...blogStructure,
     });
-    const blogAtActivity = await BlogActivities({ blog: blogUpload._id });
-    if (req.file.buffer) {
+
+    // function randomDate(start, end) {
+    //   return new Date(
+    //     start.getTime() + Math.random() * (end.getTime() - start.getTime())
+    //   );
+    // }
+    const blogAtActivity = await BlogActivities({
+      blog: blogUpload._id,
+      // views: Math.random() * 100000,
+      // blogUpload: randomDate(new Date(2012, 0, 1), new Date()),
+    });
+    if (req.file && req.file.buffer) {
       const imageUpload = await BlogsImages({
         blog: blogUpload._id,
         image: req.file.buffer,
@@ -92,6 +102,7 @@ app.get("/get/:id", async (req, res) => {
         "numComments",
         "views",
         "blogUpload",
+        "blogUpdated",
       ])
       .populate("author", [
         "name",

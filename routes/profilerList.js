@@ -8,17 +8,7 @@ app.get("/", async (req, res) => {
   if (!userid) {
     return res.status(401).json({ message: "need userid or username" });
   }
-  const user = await Registration.findOne({ userid: userid });
-  if (!user) {
-    return res
-      .status(401)
-      .json({ message: "user not found", registered: false });
-  }
-  let jobProfile = true;
-  const userOnPost = await userData.findOne({ userid: userid });
-  if (!userOnPost.jobProfile.generated) {
-    jobProfile = false;
-  }
-  res.status(200).json({ message: "success", jobProfile });
+
+  res.status(200).json({ message: "success", jobProfile: false });
 });
 module.exports = app;

@@ -38,10 +38,10 @@ app.put("/", async (req, res) => {
 
     const { newAccessToken } = verifiedRequest || "";
     const { user } = verifiedRequest;
-    let BasicInfo = await BasicUserInfo.find({
+    let BasicInfo = await BasicUserInfo.findOne({
       id: user.id,
     });
-    const basicUserId = BasicInfo[0]._id;
+    const basicUserId = BasicInfo._id;
 
     // const filter = {
     //   _id: blogId,
@@ -98,10 +98,10 @@ app.delete("/", async (req, res) => {
     }
     const { newAccessToken } = verifiedRequest || "";
     const { user } = verifiedRequest;
-    let BasicInfo = await BasicUserInfo.find({
+    let BasicInfo = await BasicUserInfo.findOne({
       id: user.id,
     });
-    const basicUserId = BasicInfo[0]._id;
+    const basicUserId = BasicInfo._id;
     const blogAuthor = await BlogsData.findById(blogId).select("author");
 
     let updatedComment;

@@ -19,7 +19,7 @@ app.get("/", async (req, res) => {
       if (!user.verified) {
         return res.status(401).json({ message: "user not verified" });
       }
-      const media = await MediaData.findOne({ id: user.id });
+      const media = await MediaData.findOne({ uid: user.id });
       // const base64 = Buffer.from(media.image).toString("base64");
       res.contentType("jpeg");
       res.status(200).send(media.image);
@@ -48,9 +48,9 @@ app.post("/uploads", upload.single("image"), async (req, res) => {
     const { newAccessToken } = verifiedRequest || "";
     const { user } = verifiedRequest;
     const buffer = req.file.buffer;
-    let saveUser = await MediaData.findOne({ id: user.id });
+    let saveUser = await MediaData.findOne({ uid: user.id });
     if (!saveUser) {
-      saveUser = MediaData({ id: user.id });
+      saveUser = MediaData({ uid: user.id });
     }
     // saveUser.image = null;
     saveUser.image = buffer;

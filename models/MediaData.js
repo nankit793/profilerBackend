@@ -2,20 +2,18 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const MediaDetails = new Schema({
-  id: { type: String, required: true, immutable: true, unique: true },
+  pid: { type: String, immutable: true, unique: true, sparse: true },
+  uid: { type: String, immutable: true, unique: true, sparse: true },
   resume: { type: Buffer },
   autoResume: { type: Boolean, default: false },
   contentType: {
     type: String,
-    // required: true,
   },
   image: {
     type: Buffer,
-    required: true,
   },
   imageName: {
     type: String,
-    // required: true,
   },
 });
 

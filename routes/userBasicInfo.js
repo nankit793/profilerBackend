@@ -13,15 +13,14 @@ app.get("/", async (req, res) => {
       .json({ message: "need userid or username", registered: false });
   }
   try {
-    const user = await userBasicInfo.findOne({ userid: userid });
+    const user = await userBasicInfo
+      .findOne({ userid: userid })
+      .populate("portfolios", ["skills", "about"]);
     if (!user) {
       return res
         .status(401)
         .json({ message: "user not found", registered: false });
     }
-    // if (!user.verified) {
-    //   return res.status(401).json({ message: "user not verified" });
-    // }
     if (requirement) {
       return res.status(200).json({
         newData: {
@@ -31,9 +30,9 @@ app.get("/", async (req, res) => {
         },
       });
     }
+
     const followData = await FollowersData.findOne({ user: user._id });
     const blogUpload = await BlogsData.find({ author: user._id });
-
     return res.status(200).json({
       message: "user has been found",
       registered: true,
@@ -73,8 +72,8 @@ app.patch("/", async (req, res) => {
     delete data["_id"];
     delete data["userid"];
     delete data["id"];
-    delete data["username"];
-    delete data["jobProfile"];
+    delete data["portfolioGenerated"];
+    delete data["portfolios"];
     const saveUser = await userBasicInfo.findOneAndUpdate(
       { id: user.id },
       data
@@ -82,10 +81,11 @@ app.patch("/", async (req, res) => {
     saveUser.save();
     res.json({
       newAccessToken,
-      message: "Updated user",
+      state: true,
+      message: "Updated has been user",
     });
   } catch (error) {
-    res.status(401).json({ message: error });
+    res.status(401).json({ message: error.message });
   }
 });
 
