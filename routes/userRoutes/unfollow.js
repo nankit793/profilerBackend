@@ -69,11 +69,11 @@ app.post("/", async (req, res) => {
 
     await userWhoIsUnFollowing.updateOne({
       $pull: { following: id },
-      $inc: { followingCount: -1 },
+      // $inc: { followingCount: -1 },
     });
     await userWhoIsUnFollowed.updateOne({
       $pull: { followers: currentUser._id },
-      $inc: { followersCount: -1 },
+      // $inc: { followersCount: -1 },
     });
     res
       .status(200)

@@ -20,6 +20,29 @@ app.get("/", async (req, res) => {
         return res.status(401).json({ message: "user not verified" });
       }
       const media = await MediaData.findOne({ uid: user.id });
+      const base64 = Buffer.from(media.image).toString("base64");
+      res.contentType("jpeg");
+      res.status(200).send(base64);
+      return;
+    }
+    res.status(401).json({ message: "userid not defined" });
+  } catch (error) {
+    res.status(401).json({ message: error.message });
+  }
+});
+
+app.get("/direct", async (req, res) => {
+  try {
+    if (req.query.userid) {
+      const user = await Registration.findOne({ userid: req.query.userid });
+      if (!user) {
+        res.status(401).json({ message: "user was not found" });
+        return;
+      }
+      if (!user.verified) {
+        return res.status(401).json({ message: "user not verified" });
+      }
+      const media = await MediaData.findOne({ uid: user.id });
       // const base64 = Buffer.from(media.image).toString("base64");
       res.contentType("jpeg");
       res.status(200).send(media.image);

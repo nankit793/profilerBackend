@@ -33,6 +33,7 @@ app.get("/", async (req, res) => {
 
     const followData = await FollowersData.findOne({ user: user._id });
     const blogUpload = await BlogsData.find({ author: user._id });
+
     return res.status(200).json({
       message: "user has been found",
       registered: true,

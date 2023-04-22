@@ -61,11 +61,11 @@ app.post("/", async (req, res) => {
 
     await userWhoIsFollowing.updateOne({
       $push: { following: id },
-      $inc: { followingCount: 1 },
+      // $inc: { followingCount: 1 },
     });
     await userWhoIsFollowed.updateOne({
       $push: { followers: currentUser._id },
-      $inc: { followersCount: 1 },
+      // $inc: { followersCount: 1 },
     });
     res.status(200).json({ message: "followed", state: true, newAccessToken });
   } catch (error) {

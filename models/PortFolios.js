@@ -46,10 +46,30 @@ const Portfolio = new Schema({
     validate: [arrayLimit, " exceeds the limit of 10"],
   },
   skills: {
-    type: [{ type: String }],
+    type: [
+      {
+        skill: { type: String, default: "", maxLength: 60 },
+        level: {
+          type: String,
+          enum: ["beginner", "intermediate", "expert"],
+          default: "beginner",
+        },
+        month: {
+          type: String,
+          enum: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
+          default: "1",
+          maxLength: 2,
+        },
+        year: {
+          type: String,
+          maxLength: 4,
+          default: "",
+        },
+      },
+    ],
     validate: [arrayLimit, " exceeds the limit of 10"],
   },
-  mail: { type: String, default: "" },
+  mail: { type: String, default: "", maxLength: 60 },
   hobbies: {
     type: [{ type: String }],
     validate: [arrayLimit, " exceeds the limit of 10"],

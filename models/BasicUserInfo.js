@@ -23,6 +23,7 @@ const BasicUserInfo = new Schema({
     },
   ],
   phone: { type: String, default: "", maxLength: 30 },
+  bio: { type: String, default: "", maxLength: 500 },
   username: { type: String, default: "", unique: true, sparse: true },
   facebook: { type: String, default: "" },
   instagram: { type: String, default: "" },

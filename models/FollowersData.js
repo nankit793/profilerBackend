@@ -16,7 +16,7 @@ const FollowSchema = new Schema(
       {
         type: Schema.Types.ObjectId,
         ref: BasicUserInfo,
-        select: false,
+        // select: false,
       },
     ],
     following: [
@@ -26,33 +26,35 @@ const FollowSchema = new Schema(
         // select: false,
       },
     ],
-    followersCount: {
-      type: Number,
-      default: 0,
-    },
-    followingCount: {
-      type: Number,
-      default: 0,
-    },
+    // followersCounts: {
+    //   type: Number,
+    //   default: 0,
+    // },
+    // followingCounts: {
+    //   type: Number,
+    //   default: 0,
+    // },
   },
   {
     toJSON: {
       transform: function (doc, ret) {
-        delete ret.followers;
+        // delete ret.followers;
         // delete ret.following;
-        delete ret._id;
+        // delete ret._id;
       },
     },
   }
 );
 
-// FollowSchema.virtual("followersCount").get(function () {
-//   return this.followers.length;
-// });
+FollowSchema.virtual("followersCount").get(function () {
+  console.log(this.followers);
+  return (this.followers && this.followers.length) || 0;
+});
 
-// FollowSchema.virtual("followingCount").get(function () {
-//   return this.following.length;
-// });
+FollowSchema.virtual("followingCount").get(function () {
+  console.log(this.following, this.following.length);
+  return (this.following && this.following.length) || 0;
+});
 
 // FollowSchema.pre("save", async function () {
 //   if (this.isModified("followers")) {
@@ -63,10 +65,10 @@ const FollowSchema = new Schema(
 //   }
 // });
 
-FollowSchema.pre("save", function (next) {
-  // this.followers.sort();
-  this.following.sort();
-  next();
-});
+// FollowSchema.pre("save", function (next) {
+//   // this.followers.sort();
+//   this.following.sort();
+//   next();
+// });
 
 module.exports = mongoose.model("followdata", FollowSchema);

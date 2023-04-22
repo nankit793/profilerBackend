@@ -47,6 +47,10 @@ app.use(
   require("./routes/web/bookMarksService/removeBookmark")
 );
 app.use("/editBlog", require("./routes/services/editBlog"));
+
+//trending blogs
+app.use("/trendingBlogs", require("./routes/tredings"));
+
 // portfolio
 app.use("/portfolio/update", require("./routes/services/updateJobProfile"));
 app.use("/portfolio/add", require("./routes/services/generatePortfolio"));

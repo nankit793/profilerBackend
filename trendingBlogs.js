@@ -15,7 +15,12 @@ const callerFunciton = async () => {
   //             { $multiply: ["$views", 0.2] },
   //             {
   //               $multiply: [
-  //                 { $divide: [1, { $subtract: [new Date(), "$blogUpload"] }] },
+  //                 {
+  //                   $divide: [
+  //                     1,
+  //                     { $subtract: [new Date(), new Date("$blogUpload")] },
+  //                   ],
+  //                 },
   //                 0.1,
   //               ],
   //             },
@@ -30,6 +35,7 @@ const callerFunciton = async () => {
   //       $limit: 10, // add a limit of 10 posts
   //     },
   //   ]);
+  //   console.log(trends);
   //   // Clear the existing trending posts
   //   await TrendingBlogs.deleteMany({});
   //   // Create new trending post documents

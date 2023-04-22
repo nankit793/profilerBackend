@@ -28,7 +28,7 @@ const BlogsData = new Schema({
     enum: ["website", "youtube"],
     default: "website",
   },
-  imageURL: { type: String, default: "", maxLength: 2048 },
+  imageURL: { type: String, default: "", maxLength: 2048, immutable: true },
   author: {
     type: Schema.Types.ObjectId,
     ref: "BasicUserInfo",
@@ -77,9 +77,20 @@ const BlogsData = new Schema({
       {
         paragraph: { type: String, maxLength: 1000 },
         subHead: { type: String, maxLength: 60 },
+        imageURL: {
+          type: String,
+          default: "",
+          maxLength: 2048,
+          immutable: true,
+        },
       },
     ],
     validate: [arrayLimit, " exceeds the limit of 4"],
+  },
+  summary: {
+    type: String,
+    default: "",
+    maxLength: 1000,
   },
 });
 
@@ -87,6 +98,6 @@ function arrayLimit(val) {
   return val.length <= 4;
 }
 
-BlogsData.index({ author: -1 });
+BlogsData.index({ author: -1, heading: -1 });
 
 module.exports = mongoose.model("BlogsData", BlogsData);
