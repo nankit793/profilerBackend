@@ -4,7 +4,7 @@ const BasicUserInfo = require("../../../models/BasicUserInfo");
 const { requestVerification } = require("../../../tokens/requestVerification");
 const PortFolios = require("../../../models/PortFolios");
 const app = express();
-app.post("/", async (req, res) => {
+app.put("/", async (req, res) => {
   try {
     const { accesstoken, refreshtoken, userid } = req.headers;
     const { pid, rid } = req.query;
@@ -48,7 +48,6 @@ app.post("/", async (req, res) => {
       { $set: { "reviews.$.text": text, "reviews.$.edited": true } },
       { new: true }
     );
-    console.log(updatedReview);
     if (updatedReview !== null) {
       return res.status(200).json({ message: "updated review", state: true });
     }
@@ -95,11 +94,7 @@ app.delete("/", async (req, res) => {
     const portfolio = await PortFolios.findById(pid).select("user");
 
     let updatedReview;
-    console.log(
-      portfolio.user.toString() === basicUserId.toString(),
-      basicUserId,
-      portfolio
-    );
+
     if (portfolio.user.toString() === basicUserId.toString()) {
       updatedReview = await PortfolioActivities.findOneAndUpdate(
         {
@@ -114,7 +109,7 @@ app.delete("/", async (req, res) => {
     } else {
       updatedReview = await PortfolioActivities.findOneAndUpdate(
         {
-          _id: blogId,
+          portfolio: pid,
           reviews: { $elemMatch: { _id: rid, user: basicUserId } },
         },
         {

@@ -34,4 +34,8 @@ const PortfolioActivities = new Schema({
   ],
 });
 
+PortfolioActivities.virtual("numReviews").get(function () {
+  return (this.reviews && this.reviews.length) || 0;
+});
+
 module.exports = mongoose.model("portfolioactivities", PortfolioActivities);

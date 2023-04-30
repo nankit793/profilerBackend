@@ -10,7 +10,7 @@ app.get("/", async (req, res) => {
       path: "blog",
       select: ["-paragraphs", "-comments"],
       populate: { path: "author", select: ["username", "name", "userid"] },
-      populate: { path: "author", select: ["username", "name", "userid"] },
+      // populate: { path: "author", select: ["username", "name", "userid"] },
       //   populate: { path: "activities", select: ["-blog"] },
     });
     //   .populate("blog.author");

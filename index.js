@@ -26,7 +26,6 @@ app.use(express.json());
 app.use("/", require("./routes/application"));
 app.use("/user", require("./routes/user"));
 app.use("/getbasic", require("./routes/userBasicInfo"));
-app.use("/jobResume", require("./routes/jobResume"));
 app.use("/searchUser", require("./routes/searchUser"));
 app.use("/profilePhoto", require("./routes/profilePhoto"));
 app.use("/follow", require("./routes/userRoutes/follow"));
@@ -52,14 +51,18 @@ app.use("/editBlog", require("./routes/services/editBlog"));
 app.use("/trendingBlogs", require("./routes/tredings"));
 
 // portfolio
+app.use("/jobResume", require("./routes/jobResume"));
 app.use("/portfolio/update", require("./routes/services/updateJobProfile"));
-app.use("/portfolio/add", require("./routes/services/generatePortfolio"));
+app.use("/portfolio/generate", require("./routes/services/generatePortfolio"));
 app.use("/portfolio/get", require("./routes/services/getPortfolio"));
 app.use("/portfolio/like", require("./routes/web/portfolio/like"));
 app.use("/portfolio/unlike", require("./routes/web/portfolio/unlike"));
 app.use("/portfolio/review", require("./routes/web/portfolio/reviews"));
-app.use("/portfolio/review", require("./routes/web/portfolio/reviews"));
 app.use("/portfolio/review/edit", require("./routes/web/portfolio/editReview"));
+app.use("/portfolio/getReviews", require("./routes/web/portfolio/getReviews"));
+app.use("/portfolio/review/pin", require("./routes/web/portfolio/pin"));
+app.use("/portfolio/review/unpin", require("./routes/web/portfolio/unpin"));
+app.use("/portfolio/bookmarks", require("./routes/web/portfolio/bookmarks"));
 
 // unhandled routes
 app.use("*", (req, res) => {

@@ -27,11 +27,10 @@ app.post(
       if (user && user.verified) {
         return res.status(409).json({ message: "user already exists" });
       }
-
-      let otp = genOTP();
+      let { hashedOTP, otp } = await genOTP();
       if (user && !user.verified) {
         // mail user their otp
-        user.otp = otp;
+        user.otp = hashedOTP;
         await user.save();
         return res.status(200).json({
           message: "user exists but not verified",
@@ -52,7 +51,7 @@ app.post(
       // const refreshToken = await generateRefreshToken(payload);
       saveOnDB(req, payload);
       //mail user
-      saveUser.otp = otp;
+      saveUser.otp = hashedOTP;
       await saveUser.save();
       res.json({
         message: "We have sent you otp in your mail, verify to continue",
@@ -89,10 +88,11 @@ app.post(
       if (user && user.verified) {
         return res.status(409).json({ message: "user already verfied" });
       }
-      const otp = genOTP();
-      user.otp = otp;
+      const { hashedOTP, otp } = await genOTP();
+      console.log(hashedOTP, otp);
+      user.otp = hashedOTP;
       user.verified = false;
-      //mail user
+      // mail user
       await user.save();
       res.status(200).json({
         message: "We have sent you otp in your mail, verify to continue",
@@ -126,14 +126,15 @@ app.post(
       if (user && user.verified) {
         return res.status(200).json({ message: "user already verfied" });
       }
-      if (user.otp && user.otp === otp) {
+      const otpCompare = await bcryptjs.compare(otp, user.otp);
+      if (user.otp && otpCompare) {
         user.verified = true;
         user.otp = null;
         await user.save();
         return res
           .status(200)
           .json({ message: "user verified", verfied: true });
-      } else if (user.otp && user.otp !== otp) {
+      } else if (user.otp && !otpCompare) {
         user.verified = false;
         user.save();
         return res.status(401).json({ message: "wrong otp! try again" });
@@ -147,12 +148,14 @@ app.post(
   }
 );
 
-const genOTP = () => {
+const genOTP = async () => {
   const otp = otpGenerator.generate(6, {
     upperCase: true,
     specialChars: false,
   });
-  return otp;
+  const salt = await bcryptjs.genSalt(10);
+  const hashedOTP = await bcryptjs.hash(otp, salt);
+  return { hashedOTP, otp };
 };
 
 module.exports = app;

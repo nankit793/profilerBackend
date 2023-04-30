@@ -59,7 +59,6 @@ app.put("/", async (req, res) => {
       { $set: { "comments.$.text": comment, "comments.$.edited": true } },
       { new: true }
     );
-    console.log(updatedComment);
     if (updatedComment !== null) {
       return res.status(200).json({ message: "updated comment", state: true });
     }
@@ -105,11 +104,7 @@ app.delete("/", async (req, res) => {
     const blogAuthor = await BlogsData.findById(blogId).select("author");
 
     let updatedComment;
-    console.log(
-      blogAuthor.author.toString() === basicUserId.toString(),
-      blogAuthor,
-      basicUserId
-    );
+
     if (blogAuthor.author.toString() === basicUserId.toString()) {
       updatedComment = await BlogsData.findOneAndUpdate(
         {

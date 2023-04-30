@@ -37,10 +37,7 @@ app.post("/", async (req, res) => {
       blogLikes = await LikesSchema({ blog: blog._id });
       await blogLikes.save();
     }
-    console.log(
-      !(blogLikes.likes && blogLikes.likes.includes(basicUserId)),
-      blogLikes
-    );
+
     if (!(blogLikes.likes && blogLikes.likes.includes(basicUserId))) {
       return res
         .status(401)

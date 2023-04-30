@@ -1,18 +1,20 @@
 const BasicUserInfo = require("../../../models/BasicUserInfo");
 const express = require("express");
+
 const BlogsData = require("../../../models/BlogsData");
 const BlogActivities = require("../../../models/BlogActivities");
 const {
   requestVerification,
   userFromToken,
 } = require("../../../tokens/requestVerification");
+const PortFolios = require("../../../models/PortFolios");
 const app = express();
 app.post("/", async (req, res) => {
   try {
     const { accesstoken, refreshtoken, userid } = req.headers;
-    const { blogId } = req.query;
-    if (!blogId) {
-      return res.status(401).json({ message: "blog is required" });
+    const { pid } = req.query;
+    if (!pid) {
+      return res.status(401).json({ message: "portfolio is required" });
     }
     const verifiedRequest = await requestVerification(
       accesstoken,
@@ -27,17 +29,17 @@ app.post("/", async (req, res) => {
     }
     const { newAccessToken } = verifiedRequest || "";
     const { user } = verifiedRequest;
-    let blog = await BlogsData.findById(blogId);
-    if (!blog) {
-      return res.status(401).json({ message: "blog was not found" });
+    let portfolio = await PortFolios.findById(pid);
+    if (!portfolio) {
+      return res.status(401).json({ message: "portfolio was not found" });
     }
     const BasicInfo = await BasicUserInfo.findOne({ id: user.id }).select(
       "portfolioBookmarks"
     );
     if (
       BasicInfo &&
-      BasicInfo.bookMarks &&
-      BasicInfo.bookMarks.includes(blogId)
+      BasicInfo.portfolioBookmarks &&
+      BasicInfo.portfolioBookmarks.includes(pid)
     ) {
       return res
         .status(401)
@@ -45,12 +47,12 @@ app.post("/", async (req, res) => {
     }
     await BasicInfo.updateOne({
       $push: {
-        bookMarks: blogId,
+        portfolioBookmarks: pid,
       },
     });
 
     res.status(200).json({
-      message: "blog added in bookmarks",
+      message: "portfolio added in bookmarks",
       state: true,
       newAccessToken,
     });
@@ -62,7 +64,6 @@ app.post("/", async (req, res) => {
 app.get("/", async (req, res) => {
   try {
     const { accesstoken, refreshtoken, userid } = req.headers;
-
     const verifiedRequest = await requestVerification(
       accesstoken,
       refreshtoken,
@@ -79,21 +80,64 @@ app.get("/", async (req, res) => {
     const { user } = verifiedRequest;
 
     let BasicInfo = await BasicUserInfo.findOne({ id: user.id })
-      .select("+bookMarks ")
+      .select("+portfolioBookmarks")
       .populate({
-        path: "bookMarks",
+        path: "portfolioBookmarks",
         populate: {
-          path: "author",
+          path: "user",
           model: "BasicUserInfo",
           select: ["userid", "username", "name"],
         },
+        select: ["title", "skills", "about"],
         // populate: { path: "activities" },
       });
     // .populate("bookMarks.author", ["userid"]);
     res.status(200).json({
       message: "blogs fetched",
       state: true,
-      bookmarks: BasicInfo.bookMarks,
+      bookmarks: BasicInfo.portfolioBookmarks,
+      newAccessToken,
+    });
+  } catch (error) {
+    res.status(401).json({ message: error.message });
+  }
+});
+
+app.delete("/", async (req, res) => {
+  try {
+    const { accesstoken, refreshtoken, userid } = req.headers;
+    const { pid } = req.query;
+    if (!pid) {
+      return res.status(401).json({ message: "portfolio is required" });
+    }
+    const verifiedRequest = await requestVerification(
+      accesstoken,
+      refreshtoken,
+      userid
+    );
+    if (!verifiedRequest.giveAccess) {
+      return res.status(401).json({
+        giveAccess: verifiedRequest.giveAccess,
+        message: verifiedRequest.message,
+      });
+    }
+    const { newAccessToken } = verifiedRequest || "";
+    const { user } = verifiedRequest;
+    let portfolio = await PortFolios.findById(pid);
+    if (!portfolio) {
+      return res.status(401).json({ message: "portfolio was not found" });
+    }
+    const BasicInfo = await BasicUserInfo.findOne({ id: user.id });
+
+    await BasicInfo.updateOne({
+      $pull: {
+        portfolioBookmarks: pid,
+      },
+    });
+
+    res.status(200).json({
+      message: "portfolio removed from bookmarks",
+      state: true,
       newAccessToken,
     });
   } catch (error) {

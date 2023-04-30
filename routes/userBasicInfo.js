@@ -15,7 +15,7 @@ app.get("/", async (req, res) => {
   try {
     const user = await userBasicInfo
       .findOne({ userid: userid })
-      .populate("portfolios", ["skills", "about"]);
+      .populate("portfolios", ["skills", "about", "mail", "title"]);
     if (!user) {
       return res
         .status(401)
@@ -43,7 +43,6 @@ app.get("/", async (req, res) => {
       blogsCount: (blogUpload && blogUpload.length) || 0,
     });
   } catch (error) {
-    console.log(error);
     return res.status(401).json({ message: error.message });
   }
 });

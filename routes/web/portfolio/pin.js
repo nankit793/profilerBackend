@@ -4,7 +4,7 @@ const BasicUserInfo = require("../../../models/BasicUserInfo");
 const { requestVerification } = require("../../../tokens/requestVerification");
 const PortFolios = require("../../../models/PortFolios");
 const app = express();
-
+var ObjectId = require("mongodb").ObjectId;
 app.put("/", async (req, res) => {
   try {
     const { accesstoken, refreshtoken, userid } = req.headers;
@@ -14,12 +14,7 @@ app.put("/", async (req, res) => {
         .status(401)
         .json({ message: "portfolio and review are required" });
     }
-    const { text } = req.body;
-    if (!text || text.length < 5) {
-      return res
-        .status(401)
-        .json({ message: "minimum length of review should be 5" });
-    }
+
     const verifiedRequest = await requestVerification(
       accesstoken,
       refreshtoken,
@@ -39,11 +34,6 @@ app.put("/", async (req, res) => {
 
     const portfolio = await PortFolios.findById(pid).select("user");
 
-    console.log(
-      portfolio.user.toString() === basicUserId.toString(),
-      basicUserId,
-      portfolio
-    );
     if (portfolio.user.toString() === basicUserId.toString()) {
       const updatedReview = await PortfolioActivities.findOneAndUpdate(
         {
@@ -53,16 +43,20 @@ app.put("/", async (req, res) => {
         { $set: { "reviews.$.pinned": true } },
         { new: true }
       );
-      console.log(updatedReview);
       if (updatedReview !== null) {
         return res.status(200).json({ message: "pinned review", state: true });
       }
       res.status(403).json({
-        message: "not authorized to pin this review",
+        message: "comment do not exist",
         state: false,
         newAccessToken,
       });
     }
+    res.status(403).json({
+      message: "not authorized to pin this review",
+      state: false,
+      newAccessToken,
+    });
   } catch (error) {
     res.status(401).json({ message: error.message });
   }

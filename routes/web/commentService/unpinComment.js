@@ -40,7 +40,6 @@ app.put("/", async (req, res) => {
       { $set: { "comments.$.pinned": false } },
       { new: true }
     );
-    console.log(updatedComment);
     if (updatedComment !== null) {
       return res.status(200).json({ message: "unpinned comment", state: true });
     }

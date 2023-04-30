@@ -1,17 +1,17 @@
 const { body } = require("express-validator");
-const jwt = require("jsonWebToken");
-const JWT_SECRET =
-  "480379f7af5696d7b0707640263189c63e1f61a4fad01d1b60b30822ffc01047";
+const jwt = require("jsonwebtoken");
 
-JWT_REFRESH_SECRET =
-  "08885372da268ae27276ad09562e8c62b3e193d351f6580c3f6546b6890abb2c";
 const UserRefToken = require("../models/UserRefToken");
 async function generateToken(payload) {
   try {
     const options = {
       expiresIn: `1h`,
     };
-    const authToken = await jwt.sign(payload, JWT_SECRET, options);
+    const authToken = await jwt.sign(
+      payload,
+      process.env.JWT_ACCESS_TOKEN_SECRET,
+      options
+    );
     return authToken;
   } catch (error) {
     return res.status(500).json({ message: error });
@@ -20,7 +20,10 @@ async function generateToken(payload) {
 
 async function verifyToken(accessToken) {
   try {
-    const verifyToken = await jwt.verify(accessToken, JWT_SECRET);
+    const verifyToken = await jwt.verify(
+      accessToken,
+      process.env.JWT_ACCESS_TOKEN_SECRET
+    );
     return { verified: true, verifyToken, generateNew: false };
   } catch (error) {
     if (error.message === "jwt expired") {
@@ -39,7 +42,11 @@ async function generateRefreshToken(payload) {
     const options = {
       expiresIn: `10 days`,
     };
-    const refreshToken = await jwt.sign(payload, JWT_REFRESH_SECRET, options);
+    const refreshToken = await jwt.sign(
+      payload,
+      process.env.JWT_REFRESH_TOKEN_SECRET,
+      options
+    );
     saveUserRefToken.refToken = refreshToken;
     saveUserRefToken.save();
     return refreshToken;
@@ -50,7 +57,10 @@ async function generateRefreshToken(payload) {
 
 async function verifyRefreshToken(refreshToken) {
   try {
-    const verifyToken = await jwt.verify(refreshToken, JWT_REFRESH_SECRET);
+    const verifyToken = await jwt.verify(
+      refreshToken,
+      process.env.JWT_REFRESH_TOKEN_SECRET
+    );
     const savedToken = await UserRefToken.findOne({ id: verifyToken.id });
 
     if (refreshToken === savedToken.refToken) {

@@ -22,8 +22,13 @@ app.post("/", async (req, res) => {
     const { user } = verifiedRequest;
 
     let BasicInfo = await BasicUserInfo.findOne({ id: user.id });
-    const basicUserId = BasicInfo._id;
 
+    if (BasicInfo && BasicInfo.portfolios && BasicInfo.portfolios.length >= 2) {
+      return res
+        .status(401)
+        .json({ message: "portfolio generating limit reached" });
+    }
+    const basicUserId = BasicInfo._id;
     const savePortfolio = await PortFolios({ user: basicUserId });
     const portfolioAtActivities = await PortfolioActivities({
       portfolio: savePortfolio._id,
@@ -38,6 +43,7 @@ app.post("/", async (req, res) => {
     await savePortfolio.save();
     res.status(200).json({
       message: "portfolio has been generated",
+      portfolioID: savePortfolio._id,
       state: true,
       newAccessToken,
     });

@@ -29,7 +29,6 @@ app.patch("/", async (req, res) => {
     let BasicInfo = await BasicUserInfo.findOne({ id: user.id });
     const basicUserId = BasicInfo._id;
     const jobProfile = req.body;
-    console.log(jobProfile);
     await PortFolios.findOneAndUpdate(
       { _id: pid, user: basicUserId },
       jobProfile,
@@ -56,7 +55,6 @@ app.patch("/resume", upload.single("resume"), async (req, res) => {
       removeresume,
       autoResume,
     } = req.headers;
-    console.log(req.headers);
     const verifiedRequest = await requestVerification(
       accesstoken,
       refreshtoken,
@@ -86,12 +84,11 @@ app.patch("/resume", upload.single("resume"), async (req, res) => {
         saveUser.autoResume = false;
         saveUser.resume = null;
       } else {
-        // console.log(req.file, req.file.buffer);
         if (autoResume && autoResume === "true") {
           saveUser.autoResume = true;
           saveUser.resume = null;
         } else if (change === "resume" && req.file.buffer) {
-          console.log("first to reach here");
+          console.log(req.file.buffer);
           saveUser.resume = req.file.buffer;
           saveUser.autoResume = false;
         }

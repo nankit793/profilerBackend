@@ -19,6 +19,18 @@ const BasicUserInfo = new Schema({
       ref: "BlogsData",
       required: true,
       select: false,
+      unique: true,
+      // },
+    },
+  ],
+  portfolioBookmarks: [
+    {
+      // bookmark: {
+      type: Schema.Types.ObjectId,
+      ref: PortFolios,
+      required: true,
+      unique: true,
+      select: false,
       // },
     },
   ],

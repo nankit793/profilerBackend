@@ -14,6 +14,7 @@ const Portfolio = new Schema({
     ref: "PortfolioActivitiess",
     requred: true,
   },
+  title: { type: String, default: "", maxLength: 60, default: "portfolio" },
   lastEdited: { type: Date, default: null },
   education: {
     type: [

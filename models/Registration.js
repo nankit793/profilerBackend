@@ -16,6 +16,7 @@ const Register = new Schema({
   },
   fpOTP: {
     type: String,
+    default: null,
     // required: true,
     select: false,
   },

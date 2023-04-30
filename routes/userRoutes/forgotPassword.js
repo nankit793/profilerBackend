@@ -22,7 +22,6 @@ app.post(
       let user = await Registeration.findOne({
         userid: req.body.userid,
       }).select("+fpOTP verified");
-      console.log(user);
       if (!user) {
         return res.status(400).json({ message: "user was not found" });
       }
@@ -34,15 +33,16 @@ app.post(
       }
       const { otp, newPassword, confirmPassword } = req.body;
       if (!otp) {
-        return res.status(401).json({ message: "enter otp" });
+        return res.status(401).json({ message: "OTP is required" });
       }
       if (newPassword !== confirmPassword) {
         return res.status(401).json({ message: "password do not match" });
       }
-      if (user.fpOTP !== otp) {
+      const otpCompare = await bcryptjs.compare(otp, user.fpOTP);
+      if (!otpCompare) {
         return res.status(401).json({ message: "wrong otp try again" });
       }
-
+      console.log("here");
       const salt = await bcryptjs.genSalt(10);
       const hashedPassword = await bcryptjs.hash(req.body.newPassword, salt);
       user.password = hashedPassword;
@@ -75,9 +75,9 @@ app.post(
         return res.status(401).json({ message: "user was not found" });
       }
       if (user && !user.verified) {
-        let otp = genOTP();
+        const { hashedOTP, otp } = await genOTP();
         // send verification otp to user
-        user.otp = otp;
+        user.otp = hashedOTP;
         await user.save();
         return res.status(409).json({
           message: "user is not verified! verify the user first!",
@@ -85,8 +85,8 @@ app.post(
           otp,
         });
       }
-      const otp = genOTP();
-      user.fpOTP = otp;
+      const { hashedOTP, otp } = await genOTP();
+      user.fpOTP = hashedOTP;
       await user.save();
       res.status(200).json({
         message: "We have sent you otp in your mail, verify to continue",
@@ -98,12 +98,14 @@ app.post(
   }
 );
 
-const genOTP = () => {
+const genOTP = async () => {
+  const salt = await bcryptjs.genSalt(10);
   const otp = otpGenerator.generate(6, {
     upperCase: true,
     specialChars: false,
   });
-  return otp;
+  const hashedOTP = await bcryptjs.hash(otp, salt);
+  return { hashedOTP, otp };
 };
 
 module.exports = app;

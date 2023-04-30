@@ -47,12 +47,10 @@ const FollowSchema = new Schema(
 );
 
 FollowSchema.virtual("followersCount").get(function () {
-  console.log(this.followers);
   return (this.followers && this.followers.length) || 0;
 });
 
 FollowSchema.virtual("followingCount").get(function () {
-  console.log(this.following, this.following.length);
   return (this.following && this.following.length) || 0;
 });
 

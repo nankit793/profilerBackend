@@ -15,11 +15,7 @@ app.put("/", async (req, res) => {
         .json({ message: "portfolio and review are required" });
     }
     const { text } = req.body;
-    if (!text || text.length < 5) {
-      return res
-        .status(401)
-        .json({ message: "minimum length of review should be 5" });
-    }
+
     const verifiedRequest = await requestVerification(
       accesstoken,
       refreshtoken,
@@ -38,12 +34,6 @@ app.put("/", async (req, res) => {
     const basicUserId = BasicInfo._id;
 
     const portfolio = await PortFolios.findById(pid).select("user");
-
-    console.log(
-      portfolio.user.toString() === basicUserId.toString(),
-      basicUserId,
-      portfolio
-    );
     if (portfolio.user.toString() === basicUserId.toString()) {
       const updatedReview = await PortfolioActivities.findOneAndUpdate(
         {
@@ -53,12 +43,13 @@ app.put("/", async (req, res) => {
         { $set: { "reviews.$.pinned": false } },
         { new: true }
       );
-      console.log(updatedReview);
       if (updatedReview !== null) {
-        return res.status(200).json({ message: "pinned review", state: true });
+        return res
+          .status(200)
+          .json({ message: "unpinned review", state: true });
       }
       res.status(403).json({
-        message: "not authorized to pin this review",
+        message: "not authorized to unpin this review",
         state: false,
         newAccessToken,
       });
