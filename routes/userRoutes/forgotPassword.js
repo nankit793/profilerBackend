@@ -3,8 +3,8 @@ const app = express();
 const { body, validationResult } = require("express-validator");
 const Registeration = require("../../models/Registration");
 const otpGenerator = require("otp-generator");
-
 const bcryptjs = require("bcryptjs");
+const { sendMail } = require("../../sendMail");
 app.post(
   "/",
   [
@@ -42,7 +42,6 @@ app.post(
       if (!otpCompare) {
         return res.status(401).json({ message: "wrong otp try again" });
       }
-      console.log("here");
       const salt = await bcryptjs.genSalt(10);
       const hashedPassword = await bcryptjs.hash(req.body.newPassword, salt);
       user.password = hashedPassword;

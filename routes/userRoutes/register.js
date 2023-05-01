@@ -6,10 +6,10 @@ const bcryptjs = require("bcryptjs");
 
 const otpGenerator = require("otp-generator");
 const nodemailer = require("nodemailer");
-
 const UserRefToken = require("../../models/UserRefToken");
 const { generateToken, generateRefreshToken } = require("../../tokens/idToken");
 const { saveOnDB } = require("./saveOnDB");
+const { sendMail } = require("../../sendMail");
 app.post(
   "/",
   [
@@ -33,7 +33,7 @@ app.post(
         user.otp = hashedOTP;
         await user.save();
         return res.status(200).json({
-          message: "user exists but not verified",
+          message: "OTP sent to your mail! user exists but not verified! ",
           redirectToVerify: true,
           otp,
         });
@@ -51,8 +51,18 @@ app.post(
       // const refreshToken = await generateRefreshToken(payload);
       saveOnDB(req, payload);
       //mail user
+      const sendOTPToMail = await sendMail({
+        to: req.body.userid,
+        subject: `Your verification OTP is ${otp}`,
+        html: `
+      <h2>Verify Yourself!</h2>
+      <p style="margin-bottom: 30px;">Please enter the OTP for verification</p>
+      <h1 style="font-size: 40px; letter-spacing: 2px; text-align:center;">${otp}</h1>
+      `,
+      });
+      console.log(sendOTPToMail);
       saveUser.otp = hashedOTP;
-      await saveUser.save();
+      // await saveUser.save();
       res.json({
         message: "We have sent you otp in your mail, verify to continue",
         redirectToVerify: true,
