@@ -1,8 +1,8 @@
 const express = require("express");
 const app = express();
-const userData = require("../models/BasicUserInfo");
-const BlogActivities = require("../models/BlogActivities");
-const Registration = require("../models/Registration");
+// const userData = require("../models/BasicUserInfo");
+// const BlogActivities = require("../models/BlogActivities");
+// const Registration = require("../models/Registration");
 const TrendingBlogs = require("../models/TrendingBlogs");
 app.get("/", async (req, res) => {
   try {

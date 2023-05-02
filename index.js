@@ -2,7 +2,6 @@ require("./db");
 require("./tokens/redis");
 const callerFunciton = require("./trendingBlogs");
 var bodyParser = require("body-parser");
-callerFunciton();
 const cors = require("cors");
 const express = require("express");
 const port = process.env.PORT || 5000;
@@ -17,7 +16,9 @@ app.use(
     extended: true,
   })
 );
-
+setInterval(() => {
+  callerFunciton();
+}, 1000 * 60 * 60);
 app.use(bodyParser.json());
 app.use(cors());
 app.use(express.json());
