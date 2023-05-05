@@ -8,7 +8,7 @@ app.get("/", async (req, res) => {
   try {
     let trendings = await TrendingBlogs.find().populate({
       path: "blog",
-      select: ["-paragraphs", "-comments"],
+      select: ["-comments"],
       populate: { path: "author", select: ["username", "name", "userid"] },
       // populate: { path: "author", select: ["username", "name", "userid"] },
       //   populate: { path: "activities", select: ["-blog"] },

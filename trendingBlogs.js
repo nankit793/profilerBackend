@@ -43,7 +43,6 @@ const callerFunciton = async () => {
         blog: blog.blog._id,
       };
     });
-    console.log(trends);
     // Insert the new trending posts into the collection
     await TrendingBlogs.insertMany(newTrendingPosts);
   } catch (error) {
