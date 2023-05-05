@@ -15,6 +15,7 @@ app.get("/", async (req, res) => {
     let portfolioAtActivities = await PortfolioActivities.findOne({
       portfolio: pid,
     });
+    const activties = portfolioAtActivities.toObject({ virtuals: true });
     if (!portfolioAtActivities) {
       portfolioAtActivities = await PortfolioActivities({ portfolio: pid });
     }
@@ -33,7 +34,7 @@ app.get("/", async (req, res) => {
     res.status(200).json({
       message: "portfolio fecthed",
       portfolio,
-      portfolioAtActivities,
+      portfolioAtActivities: activties,
       isLiked,
     });
   } catch (error) {

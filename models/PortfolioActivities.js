@@ -23,6 +23,7 @@ const PortfolioActivities = new Schema({
       createdAt: { type: Date, default: Date.now },
       pinned: { type: Boolean, default: false },
       edited: { type: Boolean, default: false },
+      select: false,
     },
   ],
   likes: [
@@ -35,7 +36,14 @@ const PortfolioActivities = new Schema({
 });
 
 PortfolioActivities.virtual("numReviews").get(function () {
+  console.log("first");
   return (this.reviews && this.reviews.length) || 0;
+});
+
+// Override the `toJSON` method to include the virtual property
+PortfolioActivities.set("toJSON", {
+  getters: true,
+  virtuals: true,
 });
 
 module.exports = mongoose.model("portfolioactivities", PortfolioActivities);
